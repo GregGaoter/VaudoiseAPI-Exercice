@@ -1,0 +1,31 @@
+{
+  "annotations": {
+    "changelogDate": "20251023132734"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "UUID"
+    },
+    {
+      "fieldName": "companyIdentifier",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "pattern"],
+      "fieldValidateRulesPattern": "^[a-z]{3}-\\d{3}$"
+    }
+  ],
+  "name": "Company",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "clientInfo",
+      "relationshipName": "clientInfo",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

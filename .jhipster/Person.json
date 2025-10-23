@@ -1,0 +1,30 @@
+{
+  "annotations": {
+    "changelogDate": "20251023132733"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "UUID"
+    },
+    {
+      "fieldName": "birthDate",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Person",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "clientInfo",
+      "relationshipName": "clientInfo",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

@@ -41,6 +41,10 @@ public class CacheConfiguration {
             createCache(cm, ch.vaudoise.vaudoiseapi.exercice.repository.UserRepository.USERS_BY_LOGIN_CACHE);
             createCache(cm, ch.vaudoise.vaudoiseapi.exercice.repository.UserRepository.USERS_BY_EMAIL_CACHE);
             createCache(cm, ch.vaudoise.vaudoiseapi.exercice.domain.Authority.class.getName());
+            createCache(cm, ch.vaudoise.vaudoiseapi.exercice.domain.ClientInfo.class.getName());
+            createCache(cm, ch.vaudoise.vaudoiseapi.exercice.domain.Person.class.getName());
+            createCache(cm, ch.vaudoise.vaudoiseapi.exercice.domain.Company.class.getName());
+            createCache(cm, ch.vaudoise.vaudoiseapi.exercice.domain.Contract.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }
