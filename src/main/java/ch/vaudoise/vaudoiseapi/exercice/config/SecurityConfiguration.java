@@ -76,12 +76,6 @@ public class SecurityConfiguration {
                     .rememberMeParameter("remember-me")
                     .key(jHipsterProperties.getSecurity().getRememberMe().getKey())
             )
-            .exceptionHandling(exceptionHanding ->
-                exceptionHanding.defaultAuthenticationEntryPointFor(
-                    new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-                    new OrRequestMatcher(antMatcher("/api/**"))
-                )
-            )
             .formLogin(formLogin ->
                 formLogin
                     .loginPage("/")
