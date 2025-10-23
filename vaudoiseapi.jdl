@@ -1,0 +1,43 @@
+entity ClientInfo {
+  id UUID
+  creationDate Instant required
+  updateDate Instant required
+  name String required
+  email String
+  phone String pattern(/^(?:\+41|0041|0)(?:\s?\(0\))?\s?[1-9]{2}\s?[0-9]{3}\s?[0-9]{2}\s?[0-9]{2}$/)
+}
+
+entity Person {
+  id UUID
+  birthDate LocalDate required
+}
+
+entity Company {
+  id UUID
+  companyIdentifier String required pattern(/^[a-z]{3}-\d{3}$/)
+}
+
+entity Contract {
+  id UUID
+  creationDate Instant required
+  updateDate Instant required
+  startDate Instant required
+  endDate Instant
+  costAmount BigDecimal required min(0.0)
+}
+
+relationship OneToOne {
+  Person{clientInfo} to ClientInfo
+}
+
+relationship OneToOne {
+  Company{clientInfo} to ClientInfo
+}
+
+relationship ManyToOne {
+  Contract{person} to Person
+  Contract{company} to Company
+}
+
+use mapstruct, pagination, filter, serviceClass for *
+
