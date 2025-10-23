@@ -13,12 +13,10 @@ import org.mapstruct.*;
  */
 @Mapper(componentModel = "spring")
 public interface PersonMapper extends EntityMapper<PersonDTO, Person> {
-    @Mapping(target = "clientInfo", source = "clientInfo", qualifiedByName = "clientInfoId")
+    @Mapping(target = "clientInfo", source = "clientInfo", qualifiedByName = "clientInfoFull")
     PersonDTO toDto(Person s);
 
-    @Named("clientInfoId")
-    @BeanMapping(ignoreByDefault = true)
-    @Mapping(target = "id", source = "id")
+    @Named("clientInfoFull")
     ClientInfoDTO toDtoClientInfoId(ClientInfo clientInfo);
 
     default String map(UUID value) {
