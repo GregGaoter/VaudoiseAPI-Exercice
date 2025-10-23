@@ -62,11 +62,12 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/account/reset-password/finish")).permitAll()
                     .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(mvc.pattern("/api/**")).permitAll()
-                    .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(mvc.pattern("/v3/api-docs/**")).permitAll()
                     .requestMatchers(mvc.pattern("/management/health")).permitAll()
                     .requestMatchers(mvc.pattern("/management/health/**")).permitAll()
                     .requestMatchers(mvc.pattern("/management/info")).permitAll()
                     .requestMatchers(mvc.pattern("/management/prometheus")).permitAll()
+                    .requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll()
                     .requestMatchers(mvc.pattern("/management/**")).hasAuthority(AuthoritiesConstants.ADMIN)
             )
             .rememberMe(rememberMe ->
