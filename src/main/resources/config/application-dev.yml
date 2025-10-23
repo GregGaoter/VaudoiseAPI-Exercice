@@ -30,17 +30,9 @@ spring:
   jackson:
     serialization:
       indent-output: true
-  datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:postgresql://localhost:5432/vaudoiseapi
-    username: vaudoiseapi
-    password:
-    hikari:
-      poolName: Hikari
-      auto-commit: false
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
-    contexts: dev, faker
+    contexts: dev
   mail:
     host: localhost
     port: 25
@@ -81,7 +73,7 @@ jhipster:
   security:
     remember-me:
       # security key (this key should be unique for your application, and kept secret)
-      key: 7c1b10ddfe0ef731bd5725d64f7119f2e9c4d278a8daace0a705fef537c6f9805078bdc1f3fba92360dbf9c54bb5315c5cae
+      key: ${SECURITY_REMEMBER_ME_KEY}
   mail: # specific JHipster mail property, for standard properties see MailProperties
     base-url: http://127.0.0.1:8080
   logging:
