@@ -1,7 +1,9 @@
 package ch.vaudoise.vaudoiseapi.exercice.web.rest;
 
 import ch.vaudoise.vaudoiseapi.exercice.repository.CompanyRepository;
+import ch.vaudoise.vaudoiseapi.exercice.service.ClientInfoService;
 import ch.vaudoise.vaudoiseapi.exercice.service.CompanyService;
+import ch.vaudoise.vaudoiseapi.exercice.service.dto.ClientInfoDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.CompanyDTO;
 import ch.vaudoise.vaudoiseapi.exercice.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -43,9 +45,12 @@ public class CompanyResource {
 
     private final CompanyRepository companyRepository;
 
-    public CompanyResource(CompanyService companyService, CompanyRepository companyRepository) {
+    private final ClientInfoService clientInfoService;
+
+    public CompanyResource(CompanyService companyService, CompanyRepository companyRepository, ClientInfoService clientInfoService) {
         this.companyService = companyService;
         this.companyRepository = companyRepository;
+        this.clientInfoService = clientInfoService;
     }
 
     /**
@@ -61,6 +66,14 @@ public class CompanyResource {
         if (companyDTO.getId() != null) {
             throw new BadRequestAlertException("A new company cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        ClientInfoDTO clientInfoDTO = companyDTO.getClientInfo();
+        if (clientInfoDTO.getId() != null) {
+            throw new BadRequestAlertException("A new clientInfo cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        ClientInfoDTO clientInfoDTOPersisted = clientInfoService.save(clientInfoDTO);
+        companyDTO.setClientInfo(clientInfoDTOPersisted);
+
         companyDTO = companyService.save(companyDTO);
         return ResponseEntity.created(new URI("/api/companies/" + companyDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, companyDTO.getId().toString()))

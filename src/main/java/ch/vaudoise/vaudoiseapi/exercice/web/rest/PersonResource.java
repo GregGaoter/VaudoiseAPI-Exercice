@@ -1,7 +1,9 @@
 package ch.vaudoise.vaudoiseapi.exercice.web.rest;
 
 import ch.vaudoise.vaudoiseapi.exercice.repository.PersonRepository;
+import ch.vaudoise.vaudoiseapi.exercice.service.ClientInfoService;
 import ch.vaudoise.vaudoiseapi.exercice.service.PersonService;
+import ch.vaudoise.vaudoiseapi.exercice.service.dto.ClientInfoDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.PersonDTO;
 import ch.vaudoise.vaudoiseapi.exercice.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -43,9 +45,12 @@ public class PersonResource {
 
     private final PersonRepository personRepository;
 
-    public PersonResource(PersonService personService, PersonRepository personRepository) {
+    private final ClientInfoService clientInfoService;
+
+    public PersonResource(PersonService personService, PersonRepository personRepository, ClientInfoService clientInfoService) {
         this.personService = personService;
         this.personRepository = personRepository;
+        this.clientInfoService = clientInfoService;
     }
 
     /**
@@ -61,6 +66,14 @@ public class PersonResource {
         if (personDTO.getId() != null) {
             throw new BadRequestAlertException("A new person cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        ClientInfoDTO clientInfoDTO = personDTO.getClientInfo();
+        if (clientInfoDTO.getId() != null) {
+            throw new BadRequestAlertException("A new clientInfo cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        ClientInfoDTO clientInfoDTOPersisted = clientInfoService.save(clientInfoDTO);
+        personDTO.setClientInfo(clientInfoDTOPersisted);
+
         personDTO = personService.save(personDTO);
         return ResponseEntity.created(new URI("/api/people/" + personDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, personDTO.getId().toString()))
