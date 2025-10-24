@@ -51,6 +51,18 @@ public class Contract implements Serializable {
     @JsonIgnoreProperties(value = { "clientInfo" }, allowSetters = true)
     private Company company;
 
+    @PrePersist
+    public void prePersist() {
+        Instant now = Instant.now();
+        this.creationDate = now;
+        this.updateDate = now;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updateDate = Instant.now();
+    }
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public UUID getId() {
