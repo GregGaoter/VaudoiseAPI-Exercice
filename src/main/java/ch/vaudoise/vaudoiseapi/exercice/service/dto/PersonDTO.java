@@ -17,6 +17,7 @@ public class PersonDTO implements Serializable {
     @NotNull
     private LocalDate birthDate;
 
+    @NotNull
     private ClientInfoDTO clientInfo;
 
     public UUID getId() {

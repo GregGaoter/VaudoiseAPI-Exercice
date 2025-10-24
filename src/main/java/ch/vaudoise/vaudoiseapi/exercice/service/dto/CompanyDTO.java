@@ -17,6 +17,7 @@ public class CompanyDTO implements Serializable {
     @Pattern(regexp = "^[a-z]{3}-\\d{3}$")
     private String companyIdentifier;
 
+    @NotNull
     private ClientInfoDTO clientInfo;
 
     public UUID getId() {

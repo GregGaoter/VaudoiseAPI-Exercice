@@ -26,6 +26,7 @@ public class Person implements Serializable {
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
 
+    @NotNull
     @JsonIgnoreProperties(value = { "person", "company" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)

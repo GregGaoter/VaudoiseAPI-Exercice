@@ -26,6 +26,7 @@ public class Company implements Serializable {
     @Column(name = "company_identifier", nullable = false)
     private String companyIdentifier;
 
+    @NotNull
     @JsonIgnoreProperties(value = { "person", "company" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
