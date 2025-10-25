@@ -28,7 +28,7 @@ public class Company implements Serializable {
 
     @NotNull
     @JsonIgnoreProperties(value = { "person", "company" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(unique = true)
     private ClientInfo clientInfo;
 
