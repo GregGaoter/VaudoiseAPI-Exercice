@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -55,55 +54,50 @@ public class ContractResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new contractDTO, or with status {@code 400 (Bad Request)} if the contract has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<ContractDTO> createContract(@Valid @RequestBody ContractDTO contractDTO) throws URISyntaxException {
         LOG.debug("REST request to save Contract : {}", contractDTO);
+
         if (contractDTO.getId() != null) {
             throw new BadRequestAlertException("A new contract cannot already have an ID", ENTITY_NAME, "idexists");
         }
         contractDTO = contractService.save(contractDTO);
+
         return ResponseEntity.created(new URI("/api/contracts/" + contractDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, contractDTO.getId().toString()))
             .body(contractDTO);
     }
 
     /**
-     * {@code PUT  /contracts/:id} : Updates an existing contract.
+     * {@code PUT  /contracts} : Updates an existing contract.
      *
-     * @param id the id of the contractDTO to save.
      * @param contractDTO the contractDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated contractDTO,
      * or with status {@code 400 (Bad Request)} if the contractDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the contractDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<ContractDTO> updateContract(
-        @PathVariable(value = "id", required = false) final UUID id,
-        @Valid @RequestBody ContractDTO contractDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to update Contract : {}, {}", id, contractDTO);
+    @PutMapping
+    public ResponseEntity<ContractDTO> updateContract(@Valid @RequestBody ContractDTO contractDTO) throws URISyntaxException {
+        LOG.debug("REST request to update Contract : {}", contractDTO);
+
         if (contractDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, contractDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!contractRepository.existsById(id)) {
+        if (!contractRepository.existsById(contractDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
         contractDTO = contractService.update(contractDTO);
+
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, contractDTO.getId().toString()))
             .body(contractDTO);
     }
 
     /**
-     * {@code PATCH  /contracts/:id} : Partial updates given fields of an existing contract, field will ignore if it is null
+     * {@code PATCH  /contracts} : Partial updates given fields of an existing contract, field will ignore if it is null
      *
-     * @param id the id of the contractDTO to save.
      * @param contractDTO the contractDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated contractDTO,
      * or with status {@code 400 (Bad Request)} if the contractDTO is not valid,
@@ -111,20 +105,14 @@ public class ContractResource {
      * or with status {@code 500 (Internal Server Error)} if the contractDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<ContractDTO> partialUpdateContract(
-        @PathVariable(value = "id", required = false) final UUID id,
-        @NotNull @RequestBody ContractDTO contractDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Contract partially : {}, {}", id, contractDTO);
+    @PatchMapping(consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<ContractDTO> partialUpdateContract(@NotNull @RequestBody ContractDTO contractDTO) throws URISyntaxException {
+        LOG.debug("REST request to partial update Contract partially : {}", contractDTO);
+
         if (contractDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, contractDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!contractRepository.existsById(id)) {
+        if (!contractRepository.existsById(contractDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -142,7 +130,7 @@ public class ContractResource {
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of contracts in body.
      */
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<ContractDTO>> getAllContracts(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of Contracts");
         Page<ContractDTO> page = contractService.findAll(pageable);

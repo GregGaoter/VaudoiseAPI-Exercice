@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -55,47 +54,41 @@ public class PersonResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new personDTO, or with status {@code 400 (Bad Request)} if the person has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<PersonDTO> createPerson(@Valid @RequestBody PersonDTO personDTO) throws URISyntaxException {
         LOG.debug("REST request to save Person : {}", personDTO);
+
         if (personDTO.getId() != null) {
             throw new BadRequestAlertException("A new person cannot already have an ID", ENTITY_NAME, "idexists");
         }
-
         if (personDTO.getClientInfo().getId() != null) {
             throw new BadRequestAlertException("A new clientInfo cannot already have an ID", ENTITY_NAME, "idexists");
         }
 
         personDTO = personService.save(personDTO);
+
         return ResponseEntity.created(new URI("/api/people/" + personDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, personDTO.getId().toString()))
             .body(personDTO);
     }
 
     /**
-     * {@code PUT  /people/:id} : Updates an existing person.
+     * {@code PUT  /people} : Updates an existing person.
      *
-     * @param id the id of the personDTO to save.
      * @param personDTO the personDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated personDTO,
      * or with status {@code 400 (Bad Request)} if the personDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the personDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<PersonDTO> updatePerson(
-        @PathVariable(value = "id", required = false) final UUID id,
-        @Valid @RequestBody PersonDTO personDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to update Person : {}, {}", id, personDTO);
+    @PutMapping
+    public ResponseEntity<PersonDTO> updatePerson(@Valid @RequestBody PersonDTO personDTO) throws URISyntaxException {
+        LOG.debug("REST request to update Person : {}", personDTO);
+
         if (personDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, personDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!personRepository.existsById(id)) {
+        if (!personRepository.existsById(personDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -106,9 +99,8 @@ public class PersonResource {
     }
 
     /**
-     * {@code PATCH  /people/:id} : Partial updates given fields of an existing person, field will ignore if it is null
+     * {@code PATCH  /people} : Partial updates given fields of an existing person, field will ignore if it is null
      *
-     * @param id the id of the personDTO to save.
      * @param personDTO the personDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated personDTO,
      * or with status {@code 400 (Bad Request)} if the personDTO is not valid,
@@ -116,20 +108,15 @@ public class PersonResource {
      * or with status {@code 500 (Internal Server Error)} if the personDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<PersonDTO> partialUpdatePerson(
-        @PathVariable(value = "id", required = false) final UUID id,
-        @NotNull @RequestBody PersonDTO personDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to partial update Person partially : {}, {}", id, personDTO);
+    @PatchMapping(consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<PersonDTO> partialUpdatePerson(@NotNull @RequestBody PersonDTO personDTO) throws URISyntaxException {
+        LOG.debug("REST request to partial update Person partially : {}", personDTO);
+
         if (personDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, personDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
 
-        if (!personRepository.existsById(id)) {
+        if (!personRepository.existsById(personDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -147,7 +134,7 @@ public class PersonResource {
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of people in body.
      */
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<PersonDTO>> getAllPeople(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of People");
         Page<PersonDTO> page = personService.findAll(pageable);

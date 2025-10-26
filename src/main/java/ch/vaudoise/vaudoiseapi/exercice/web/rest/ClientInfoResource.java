@@ -9,7 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -56,55 +55,51 @@ public class ClientInfoResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new clientInfoDTO, or with status {@code 400 (Bad Request)} if the clientInfo has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<ClientInfoDTO> createClientInfo(@Valid @RequestBody ClientInfoDTO clientInfoDTO) throws URISyntaxException {
         LOG.debug("REST request to save ClientInfo : {}", clientInfoDTO);
+
         if (clientInfoDTO.getId() != null) {
             throw new BadRequestAlertException("A new clientInfo cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
         clientInfoDTO = clientInfoService.save(clientInfoDTO);
+
         return ResponseEntity.created(new URI("/api/client-infos/" + clientInfoDTO.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, clientInfoDTO.getId().toString()))
             .body(clientInfoDTO);
     }
 
     /**
-     * {@code PUT  /client-infos/:id} : Updates an existing clientInfo.
+     * {@code PUT  /client-infos} : Updates an existing clientInfo.
      *
-     * @param id the id of the clientInfoDTO to save.
      * @param clientInfoDTO the clientInfoDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated clientInfoDTO,
      * or with status {@code 400 (Bad Request)} if the clientInfoDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the clientInfoDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<ClientInfoDTO> updateClientInfo(
-        @PathVariable(value = "id", required = false) final UUID id,
-        @Valid @RequestBody ClientInfoDTO clientInfoDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to update ClientInfo : {}, {}", id, clientInfoDTO);
+    @PutMapping
+    public ResponseEntity<ClientInfoDTO> updateClientInfo(@Valid @RequestBody ClientInfoDTO clientInfoDTO) throws URISyntaxException {
+        LOG.debug("REST request to update ClientInfo : {}", clientInfoDTO);
+
         if (clientInfoDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, clientInfoDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!clientInfoRepository.existsById(id)) {
+        if (!clientInfoRepository.existsById(clientInfoDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
         clientInfoDTO = clientInfoService.update(clientInfoDTO);
+
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, clientInfoDTO.getId().toString()))
             .body(clientInfoDTO);
     }
 
     /**
-     * {@code PATCH  /client-infos/:id} : Partial updates given fields of an existing clientInfo, field will ignore if it is null
+     * {@code PATCH  /client-infos} : Partial updates given fields of an existing clientInfo, field will ignore if it is null
      *
-     * @param id the id of the clientInfoDTO to save.
      * @param clientInfoDTO the clientInfoDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated clientInfoDTO,
      * or with status {@code 400 (Bad Request)} if the clientInfoDTO is not valid,
@@ -112,20 +107,15 @@ public class ClientInfoResource {
      * or with status {@code 500 (Internal Server Error)} if the clientInfoDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<ClientInfoDTO> partialUpdateClientInfo(
-        @PathVariable(value = "id", required = false) final UUID id,
-        @NotNull @RequestBody ClientInfoDTO clientInfoDTO
-    ) throws URISyntaxException {
-        LOG.debug("REST request to partial update ClientInfo partially : {}, {}", id, clientInfoDTO);
+    @PatchMapping(consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<ClientInfoDTO> partialUpdateClientInfo(@NotNull @RequestBody ClientInfoDTO clientInfoDTO)
+        throws URISyntaxException {
+        LOG.debug("REST request to partial update ClientInfo partially : {}", clientInfoDTO);
+
         if (clientInfoDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!Objects.equals(id, clientInfoDTO.getId())) {
-            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
-        }
-
-        if (!clientInfoRepository.existsById(id)) {
+        if (!clientInfoRepository.existsById(clientInfoDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
@@ -144,7 +134,7 @@ public class ClientInfoResource {
      * @param filter the filter of the request.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of clientInfos in body.
      */
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<List<ClientInfoDTO>> getAllClientInfos(
         @org.springdoc.core.annotations.ParameterObject Pageable pageable,
         @RequestParam(name = "filter", required = false) String filter
