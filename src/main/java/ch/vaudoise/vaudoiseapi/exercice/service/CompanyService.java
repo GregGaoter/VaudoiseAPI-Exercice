@@ -3,7 +3,10 @@ package ch.vaudoise.vaudoiseapi.exercice.service;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Company;
 import ch.vaudoise.vaudoiseapi.exercice.repository.CompanyRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.CompanyDTO;
+import ch.vaudoise.vaudoiseapi.exercice.service.dto.CompanyUpdateDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.CompanyMapper;
+import ch.vaudoise.vaudoiseapi.exercice.service.mapper.CompanyUpdateMapper;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -26,9 +29,12 @@ public class CompanyService {
 
     private final CompanyMapper companyMapper;
 
-    public CompanyService(CompanyRepository companyRepository, CompanyMapper companyMapper) {
+    private final CompanyUpdateMapper companyUpdateMapper;
+
+    public CompanyService(CompanyRepository companyRepository, CompanyMapper companyMapper, CompanyUpdateMapper companyUpdateMapper) {
         this.companyRepository = companyRepository;
         this.companyMapper = companyMapper;
+        this.companyUpdateMapper = companyUpdateMapper;
     }
 
     /**
@@ -47,29 +53,35 @@ public class CompanyService {
     /**
      * Update a company.
      *
-     * @param companyDTO the entity to save.
+     * @param companyUpdateDTO the entity to save.
      * @return the persisted entity.
      */
-    public CompanyDTO update(CompanyDTO companyDTO) {
-        LOG.debug("Request to update Company : {}", companyDTO);
-        Company company = companyMapper.toEntity(companyDTO);
-        company = companyRepository.save(company);
-        return companyMapper.toDto(company);
+    public CompanyDTO update(CompanyUpdateDTO companyUpdateDTO) {
+        LOG.debug("Request to update Company : {}", companyUpdateDTO);
+
+        UUID id = companyUpdateDTO.getId();
+        Company databaseCompany = companyRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(String.format("Company with id %s not found", String.valueOf(id))));
+        Company updatedCompany = companyUpdateMapper.updateCompanyFromDto(companyUpdateDTO, databaseCompany);
+        Company persistedCompany = companyRepository.save(updatedCompany);
+
+        return companyMapper.toDto(persistedCompany);
     }
 
     /**
      * Partially update a company.
      *
-     * @param companyDTO the entity to update partially.
+     * @param companyUpdateDTO the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<CompanyDTO> partialUpdate(CompanyDTO companyDTO) {
-        LOG.debug("Request to partially update Company : {}", companyDTO);
+    public Optional<CompanyDTO> partialUpdate(CompanyUpdateDTO companyUpdateDTO) {
+        LOG.debug("Request to partially update Company : {}", companyUpdateDTO);
 
         return companyRepository
-            .findById(companyDTO.getId())
+            .findById(companyUpdateDTO.getId())
             .map(existingCompany -> {
-                companyMapper.partialUpdate(existingCompany, companyDTO);
+                companyUpdateMapper.partialUpdate(existingCompany, companyUpdateDTO);
 
                 return existingCompany;
             })

@@ -3,6 +3,7 @@ package ch.vaudoise.vaudoiseapi.exercice.web.rest;
 import ch.vaudoise.vaudoiseapi.exercice.repository.CompanyRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.CompanyService;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.CompanyDTO;
+import ch.vaudoise.vaudoiseapi.exercice.service.dto.CompanyUpdateDTO;
 import ch.vaudoise.vaudoiseapi.exercice.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -82,17 +83,17 @@ public class CompanyResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping
-    public ResponseEntity<CompanyDTO> updateCompany(@Valid @RequestBody CompanyDTO companyDTO) throws URISyntaxException {
-        LOG.debug("REST request to update Company : {}", companyDTO);
+    public ResponseEntity<CompanyDTO> updateCompany(@Valid @RequestBody CompanyUpdateDTO companyUpdateDTO) throws URISyntaxException {
+        LOG.debug("REST request to update Company : {}", companyUpdateDTO);
 
-        if (companyDTO.getId() == null) {
+        if (companyUpdateDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!companyRepository.existsById(companyDTO.getId())) {
+        if (!companyRepository.existsById(companyUpdateDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        companyDTO = companyService.update(companyDTO);
+        CompanyDTO companyDTO = companyService.update(companyUpdateDTO);
 
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, companyDTO.getId().toString()))
@@ -102,29 +103,30 @@ public class CompanyResource {
     /**
      * {@code PATCH  /companies} : Partial updates given fields of an existing company, field will ignore if it is null
      *
-     * @param companyDTO the companyDTO to update.
+     * @param companyUpdateDTO the companyDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated companyDTO,
-     * or with status {@code 400 (Bad Request)} if the companyDTO is not valid,
+     * or with status {@code 400 (Bad Request)} if the companyUpdateDTO is not valid,
      * or with status {@code 404 (Not Found)} if the companyDTO is not found,
      * or with status {@code 500 (Internal Server Error)} if the companyDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<CompanyDTO> partialUpdateCompany(@NotNull @RequestBody CompanyDTO companyDTO) throws URISyntaxException {
-        LOG.debug("REST request to partial update Company partially : {}", companyDTO);
+    public ResponseEntity<CompanyDTO> partialUpdateCompany(@NotNull @RequestBody CompanyUpdateDTO companyUpdateDTO)
+        throws URISyntaxException {
+        LOG.debug("REST request to partial update Company partially : {}", companyUpdateDTO);
 
-        if (companyDTO.getId() == null) {
+        if (companyUpdateDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!companyRepository.existsById(companyDTO.getId())) {
+        if (!companyRepository.existsById(companyUpdateDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<CompanyDTO> result = companyService.partialUpdate(companyDTO);
+        Optional<CompanyDTO> result = companyService.partialUpdate(companyUpdateDTO);
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, companyDTO.getId().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, companyUpdateDTO.getId().toString())
         );
     }
 
