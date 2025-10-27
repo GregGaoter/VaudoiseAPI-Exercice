@@ -187,6 +187,12 @@ public class ContractService {
         return contractRepository.findAll(spec, pageable).map(contractMapper::toDto);
     }
 
+    public BigDecimal getActiveCostAmountTotalByCompanyId(UUID companyId) {
+        LOG.debug("Request to get the cost amount total of all active Contracts");
+
+        return contractRepository.getActiveCostAmountTotalByCompanyId(companyId);
+    }
+
     /**
      * Get one contract by id.
      *

@@ -1,6 +1,7 @@
 package ch.vaudoise.vaudoiseapi.exercice.repository;
 
 import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -18,4 +19,7 @@ public interface ContractRepository extends JpaRepository<Contract, UUID>, JpaSp
     List<Contract> findByCompanyId(UUID companyId);
 
     List<Contract> findByPersonId(UUID personId);
+
+    @Query("SELECT SUM(c.costAmount) FROM Contract c WHERE c.company.id = :companyId AND c.endDate > CURRENT_TIMESTAMP")
+    BigDecimal getActiveCostAmountTotalByCompanyId(@Param("companyId") UUID companyId);
 }

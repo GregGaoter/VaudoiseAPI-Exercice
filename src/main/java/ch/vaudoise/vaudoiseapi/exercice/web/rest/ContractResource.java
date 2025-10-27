@@ -6,6 +6,7 @@ import ch.vaudoise.vaudoiseapi.exercice.service.dto.ContractDTO;
 import ch.vaudoise.vaudoiseapi.exercice.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -206,6 +207,13 @@ public class ContractResource {
         Page<ContractDTO> page = contractService.findActiveByPersonId(personId, updatedFrom, updatedTo, pageable);
 
         return ResponseEntity.ok().body(page.getContent());
+    }
+
+    @GetMapping("/company/{companyId}/active/costAmountTotal")
+    public ResponseEntity<BigDecimal> getActiveCostAmountTotalByCompanyId(@PathVariable UUID companyId) {
+        BigDecimal costAmountTotal = contractService.getActiveCostAmountTotalByCompanyId(companyId);
+
+        return ResponseEntity.ok().body(costAmountTotal);
     }
 
     /**
