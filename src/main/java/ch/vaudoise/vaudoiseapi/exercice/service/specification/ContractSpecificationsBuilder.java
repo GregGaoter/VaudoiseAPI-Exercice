@@ -14,6 +14,11 @@ public class ContractSpecificationsBuilder {
         return this;
     }
 
+    public ContractSpecificationsBuilder withPerson(UUID personId) {
+        spec = spec.and(ContractSpecifications.hasPersonId(personId));
+        return this;
+    }
+
     public ContractSpecificationsBuilder active() {
         spec = spec.and(ContractSpecifications.isActive());
         return this;

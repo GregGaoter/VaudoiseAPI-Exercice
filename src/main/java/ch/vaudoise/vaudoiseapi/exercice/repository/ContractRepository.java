@@ -18,7 +18,4 @@ public interface ContractRepository extends JpaRepository<Contract, UUID>, JpaSp
     List<Contract> findByCompanyId(UUID companyId);
 
     List<Contract> findByPersonId(UUID personId);
-
-    @Query("SELECT c FROM Contract c WHERE c.person.id = :personId AND c.endDate > CURRENT_TIMESTAMP")
-    Page<Contract> findActiveByPersonId(@Param("personId") UUID personId, Pageable pageable);
 }

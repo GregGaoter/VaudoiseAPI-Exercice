@@ -170,27 +170,41 @@ public class ContractResource {
         @ParameterObject Pageable pageable
     ) {
         Page<ContractDTO> page = contractService.findActiveByCompanyId(companyId, updatedFrom, updatedTo, pageable);
+
         return ResponseEntity.ok().body(page.getContent());
     }
 
     /**
-     * Handles HTTP GET requests to retrieve all active contracts for a given person.
+     * Handles HTTP GET requests to retrieve all active contracts for a given person,
+     * optionally filtered by their last update date.
      * <p>
-     * This endpoint returns a list of {@link ContractDTO} objects representing the active
-     * contracts associated with the specified person. The results are paginated internally
-     * using the provided {@link Pageable} parameter, but only the content of the current page
-     * is returned in the response body.
+     * This endpoint queries the service layer for contracts that:
+     * <ul>
+     *   <li>Belong to the specified person</li>
+     *   <li>Are currently active</li>
+     *   <li>Were last updated between {@code updatedFrom} and {@code updatedTo}, if provided</li>
+     * </ul>
+     * The results are paginated internally using the {@link Pageable} parameter, but only the
+     * content of the current page is returned in the response body.
      * </p>
      *
-     * @param personId the unique identifier of the person whose active contracts should be retrieved
-     * @param pageable  pagination information (page number, size, and sorting options) used to query the contracts
-     * @return a {@link ResponseEntity} containing a list of {@link ContractDTO} for the active contracts
+     * @param personId    the unique identifier of the person whose active contracts should be retrieved
+     * @param updatedFrom the lower bound of the update date filter (inclusive), or {@code null} for no lower bound
+     * @param updatedTo   the upper bound of the update date filter (inclusive), or {@code null} for no upper bound
+     * @param pageable    pagination information, including page number, size, and sorting options
+     * @return a {@link ResponseEntity} containing a list of {@link ContractDTO} representing the active contracts
      *         of the specified person, with HTTP status 200 (OK)
      * @throws IllegalArgumentException if {@code personId} is {@code null}
      */
     @GetMapping("/person/{personId}/active")
-    public ResponseEntity<List<ContractDTO>> getActiveContractsByPersonId(@PathVariable UUID personId, @ParameterObject Pageable pageable) {
-        Page<ContractDTO> page = contractService.findActiveByPersonId(personId, pageable);
+    public ResponseEntity<List<ContractDTO>> getActiveContractsByPersonId(
+        @PathVariable UUID personId,
+        @RequestParam(required = false) Instant updatedFrom,
+        @RequestParam(required = false) Instant updatedTo,
+        @ParameterObject Pageable pageable
+    ) {
+        Page<ContractDTO> page = contractService.findActiveByPersonId(personId, updatedFrom, updatedTo, pageable);
+
         return ResponseEntity.ok().body(page.getContent());
     }
 

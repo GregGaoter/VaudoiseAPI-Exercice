@@ -3,6 +3,7 @@ package ch.vaudoise.vaudoiseapi.exercice.service.specification;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Company_;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Contract_;
+import ch.vaudoise.vaudoiseapi.exercice.domain.Person_;
 import java.time.Instant;
 import java.util.UUID;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,6 +12,10 @@ public class ContractSpecifications {
 
     public static Specification<Contract> hasCompanyId(UUID companyId) {
         return (root, query, cb) -> cb.equal(root.get(Contract_.COMPANY).get(Company_.ID), companyId);
+    }
+
+    public static Specification<Contract> hasPersonId(UUID personId) {
+        return (root, query, cb) -> cb.equal(root.get(Contract_.PERSON).get(Person_.ID), personId);
     }
 
     public static Specification<Contract> isActive() {

@@ -152,23 +152,39 @@ public class ContractService {
     }
 
     /**
-     * Retrieves a paginated list of active contracts (current date < end date) associated with the given person id.
+     * Retrieves a paginated list of active contracts for the specified person,
+     * optionally filtered by the last update date range.
      * <p>
-     * This method queries the underlying repository for contracts that are currently active
-     * and belong to the specified person. The results are mapped to {@link ContractDTO}
-     * objects before being returned. The query is executed in read-only transactional mode
-     * to ensure performance and prevent unintended modifications.
+     * A {@link Specification} is built to include the following criteria:
+     * <ul>
+     *   <li>Contracts belonging to the given person</li>
+     *   <li>Contracts that are currently active</li>
+     *   <li>Contracts last updated between {@code updatedFrom} and {@code updatedTo},
+     *       if these parameters are provided</li>
+     * </ul>
+     * The resulting entities are mapped to {@link ContractDTO} objects before being returned.
+     * The query is executed in read-only transactional mode to ensure performance
+     * and prevent unintended modifications.
      * </p>
      *
-     * @param companyId the unique identifier of the person whose active contracts should be retrieved
-     * @param pageable  pagination information, including page number, size, and sorting options
-     * @return a {@link Page} of {@link ContractDTO} representing the active contracts of the person
+     * @param personId   the unique identifier of the person whose active contracts should be retrieved
+     * @param updatedFrom the lower bound of the update date filter (inclusive), or {@code null} for no lower bound
+     * @param updatedTo   the upper bound of the update date filter (inclusive), or {@code null} for no upper bound
+     * @param pageable    pagination information, including page number, size, and sorting options
+     * @return a {@link Page} of {@link ContractDTO} representing the active contracts that match the criteria
      * @throws IllegalArgumentException if {@code personId} is {@code null}
      */
     @Transactional(readOnly = true)
-    public Page<ContractDTO> findActiveByPersonId(UUID personId, Pageable pageable) {
+    public Page<ContractDTO> findActiveByPersonId(UUID personId, Instant updatedFrom, Instant updatedTo, Pageable pageable) {
         LOG.debug("Request to get all active Contracts");
-        return contractRepository.findActiveByPersonId(personId, pageable).map(contractMapper::toDto);
+
+        Specification<Contract> spec = new ContractSpecificationsBuilder()
+            .withPerson(personId)
+            .active()
+            .updatedBetween(updatedFrom, updatedTo)
+            .build();
+
+        return contractRepository.findAll(spec, pageable).map(contractMapper::toDto);
     }
 
     /**
