@@ -19,7 +19,8 @@ public class ContractSpecifications {
     }
 
     public static Specification<Contract> isActive() {
-        return (root, query, cb) -> cb.greaterThan(root.get(Contract_.END_DATE), Instant.now());
+        return (root, query, cb) ->
+            cb.or(cb.isNull(root.get(Contract_.END_DATE)), cb.greaterThan(root.get(Contract_.END_DATE), Instant.now()));
     }
 
     public static Specification<Contract> updatedAfter(Instant fromDate) {
