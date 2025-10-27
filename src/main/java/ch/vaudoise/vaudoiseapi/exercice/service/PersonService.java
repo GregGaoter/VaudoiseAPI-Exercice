@@ -1,7 +1,9 @@
 package ch.vaudoise.vaudoiseapi.exercice.service;
 
+import ch.vaudoise.vaudoiseapi.exercice.domain.ClientInfo;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Person;
+import ch.vaudoise.vaudoiseapi.exercice.repository.ClientInfoRepository;
 import ch.vaudoise.vaudoiseapi.exercice.repository.ContractRepository;
 import ch.vaudoise.vaudoiseapi.exercice.repository.PersonRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.PersonDTO;
@@ -37,16 +39,20 @@ public class PersonService {
 
     private final ContractRepository contractRepository;
 
+    private final ClientInfoRepository clientInfoRepository;
+
     public PersonService(
         PersonRepository personRepository,
         PersonMapper personMapper,
         PersonUpdateMapper personUpdateMapper,
-        ContractRepository contractRepository
+        ContractRepository contractRepository,
+        ClientInfoRepository clientInfoRepository
     ) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
         this.personUpdateMapper = personUpdateMapper;
         this.contractRepository = contractRepository;
+        this.clientInfoRepository = clientInfoRepository;
     }
 
     /**
@@ -126,18 +132,32 @@ public class PersonService {
     }
 
     /**
-     * Delete the person by id.
+     * Deactivates a person and its associated entities.
      *
-     * @param id the id of the entity.
+     * This method performs the following operations:
+     * 1. Deactivates all contracts associated with the person by setting their end date to current time
+     * 2. Deactivates the person's client information by setting active status to false
+     *
+     * @param id The UUID of the person to be deactivated
+     * @throws RuntimeException if any database operation fails
      */
     public void delete(UUID id) {
         LOG.debug("Request to delete Person : {}", id);
 
-        List<Contract> contracts = contractRepository.findByPersonId(id);
         Instant now = Instant.now();
+
+        // Deactivate contracts
+        List<Contract> contracts = contractRepository.findByPersonId(id);
         contracts.forEach(contract -> contract.setEndDate(now));
         contractRepository.saveAll(contracts);
 
-        personRepository.deleteById(id);
+        // Deactivate client info
+        personRepository
+            .findById(id)
+            .ifPresent(person -> {
+                ClientInfo clientInfo = person.getClientInfo();
+                clientInfo.setActive(false);
+                clientInfoRepository.save(clientInfo);
+            });
     }
 }

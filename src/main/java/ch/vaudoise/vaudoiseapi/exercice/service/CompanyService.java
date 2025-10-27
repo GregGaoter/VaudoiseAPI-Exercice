@@ -1,7 +1,9 @@
 package ch.vaudoise.vaudoiseapi.exercice.service;
 
+import ch.vaudoise.vaudoiseapi.exercice.domain.ClientInfo;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Company;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
+import ch.vaudoise.vaudoiseapi.exercice.repository.ClientInfoRepository;
 import ch.vaudoise.vaudoiseapi.exercice.repository.CompanyRepository;
 import ch.vaudoise.vaudoiseapi.exercice.repository.ContractRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.CompanyDTO;
@@ -37,16 +39,20 @@ public class CompanyService {
 
     private final ContractRepository contractRepository;
 
+    private final ClientInfoRepository clientInfoRepository;
+
     public CompanyService(
         CompanyRepository companyRepository,
         CompanyMapper companyMapper,
         CompanyUpdateMapper companyUpdateMapper,
-        ContractRepository contractRepository
+        ContractRepository contractRepository,
+        ClientInfoRepository clientInfoRepository
     ) {
         this.companyRepository = companyRepository;
         this.companyMapper = companyMapper;
         this.companyUpdateMapper = companyUpdateMapper;
         this.contractRepository = contractRepository;
+        this.clientInfoRepository = clientInfoRepository;
     }
 
     /**
@@ -126,18 +132,32 @@ public class CompanyService {
     }
 
     /**
-     * Delete the company by id.
+     * Deactivates a company and its associated entities.
      *
-     * @param id the id of the entity.
+     * This method performs the following operations:
+     * 1. Deactivates all contracts associated with the company by setting their end date to current time
+     * 2. Deactivates the company's client information by setting active status to false
+     *
+     * @param id The UUID of the company to be deactivated
+     * @throws RuntimeException if any database operation fails
      */
     public void delete(UUID id) {
         LOG.debug("Request to delete Company : {}", id);
 
-        List<Contract> contracts = contractRepository.findByCompanyId(id);
         Instant now = Instant.now();
+
+        // Deactivate contracts
+        List<Contract> contracts = contractRepository.findByCompanyId(id);
         contracts.forEach(contract -> contract.setEndDate(now));
         contractRepository.saveAll(contracts);
 
-        companyRepository.deleteById(id);
+        // Deactivate client info
+        companyRepository
+            .findById(id)
+            .ifPresent(company -> {
+                ClientInfo clientInfo = company.getClientInfo();
+                clientInfo.setActive(false);
+                clientInfoRepository.save(clientInfo);
+            });
     }
 }
