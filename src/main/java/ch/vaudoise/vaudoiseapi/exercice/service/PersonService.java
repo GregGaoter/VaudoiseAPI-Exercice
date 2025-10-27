@@ -1,12 +1,16 @@
 package ch.vaudoise.vaudoiseapi.exercice.service;
 
+import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Person;
+import ch.vaudoise.vaudoiseapi.exercice.repository.ContractRepository;
 import ch.vaudoise.vaudoiseapi.exercice.repository.PersonRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.PersonDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.PersonUpdateDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.PersonMapper;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.PersonUpdateMapper;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -31,10 +35,18 @@ public class PersonService {
 
     private final PersonUpdateMapper personUpdateMapper;
 
-    public PersonService(PersonRepository personRepository, PersonMapper personMapper, PersonUpdateMapper personUpdateMapper) {
+    private final ContractRepository contractRepository;
+
+    public PersonService(
+        PersonRepository personRepository,
+        PersonMapper personMapper,
+        PersonUpdateMapper personUpdateMapper,
+        ContractRepository contractRepository
+    ) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
         this.personUpdateMapper = personUpdateMapper;
+        this.contractRepository = contractRepository;
     }
 
     /**
@@ -120,6 +132,12 @@ public class PersonService {
      */
     public void delete(UUID id) {
         LOG.debug("Request to delete Person : {}", id);
+
+        List<Contract> contracts = contractRepository.findByPersonId(id);
+        Instant now = Instant.now();
+        contracts.forEach(contract -> contract.setEndDate(now));
+        contractRepository.saveAll(contracts);
+
         personRepository.deleteById(id);
     }
 }

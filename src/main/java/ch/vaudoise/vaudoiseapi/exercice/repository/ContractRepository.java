@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ContractRepository extends JpaRepository<Contract, UUID> {
     List<Contract> findByCompanyId(UUID companyId);
+
+    List<Contract> findByPersonId(UUID personId);
 }
