@@ -13,7 +13,7 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link Contract} and its DTO {@link ContractDTO}.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { CompanyMapper.class, PersonMapper.class })
 public interface ContractMapper extends EntityMapper<ContractDTO, Contract> {
     @Mapping(target = "person", source = "person", qualifiedByName = "personId")
     @Mapping(target = "company", source = "company", qualifiedByName = "companyId")
@@ -28,6 +28,8 @@ public interface ContractMapper extends EntityMapper<ContractDTO, Contract> {
     @BeanMapping(ignoreByDefault = true)
     @Mapping(target = "id", source = "id")
     CompanyDTO toDtoCompanyId(Company company);
+
+    Contract updateContractFromDto(ContractDTO dto, @MappingTarget Contract entity);
 
     default String map(UUID value) {
         return Objects.toString(value, null);

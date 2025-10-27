@@ -4,6 +4,9 @@ import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
 import ch.vaudoise.vaudoiseapi.exercice.repository.ContractRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.ContractDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.ContractMapper;
+import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -52,6 +55,25 @@ public class ContractService {
      */
     public ContractDTO update(ContractDTO contractDTO) {
         LOG.debug("Request to update Contract : {}", contractDTO);
+
+        UUID id = contractDTO.getId();
+        Contract databaseContract = contractRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(String.format("Contract with id %s not found", String.valueOf(id))));
+
+        BigDecimal databaseCostAmount = databaseContract.getCostAmount();
+
+        Contract contractUpdated = contractMapper.updateContractFromDto(contractDTO, databaseContract);
+
+        // Set the updateDate to the current Instant if costAmount has changed
+        if (
+            databaseCostAmount != null &&
+            contractUpdated.getCostAmount() != null &&
+            databaseCostAmount.compareTo(contractUpdated.getCostAmount()) != 0
+        ) {
+            contractUpdated.setUpdateDate(Instant.now());
+        }
+
         Contract contract = contractMapper.toEntity(contractDTO);
         contract = contractRepository.save(contract);
         return contractMapper.toDto(contract);
