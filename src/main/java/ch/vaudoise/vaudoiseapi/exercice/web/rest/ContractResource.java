@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -140,26 +141,35 @@ public class ContractResource {
     }
 
     /**
-     * Handles HTTP GET requests to retrieve all active contracts for a given company.
+     * Handles HTTP GET requests to retrieve all active contracts for a given company,
+     * optionally filtered by their last update date.
      * <p>
-     * This endpoint returns a list of {@link ContractDTO} objects representing the active
-     * contracts associated with the specified company. The results are paginated internally
-     * using the provided {@link Pageable} parameter, but only the content of the current page
-     * is returned in the response body.
+     * This endpoint queries the service layer for contracts that:
+     * <ul>
+     *   <li>Belong to the specified company</li>
+     *   <li>Are currently active</li>
+     *   <li>Were last updated between {@code updatedFrom} and {@code updatedTo}, if provided</li>
+     * </ul>
+     * The results are paginated internally using the {@link Pageable} parameter, but only the
+     * content of the current page is returned in the response body.
      * </p>
      *
-     * @param companyId the unique identifier of the company whose active contracts should be retrieved
-     * @param pageable  pagination information (page number, size, and sorting options) used to query the contracts
-     * @return a {@link ResponseEntity} containing a list of {@link ContractDTO} for the active contracts
+     * @param companyId   the unique identifier of the company whose active contracts should be retrieved
+     * @param updatedFrom the lower bound of the update date filter (inclusive), or {@code null} for no lower bound
+     * @param updatedTo   the upper bound of the update date filter (inclusive), or {@code null} for no upper bound
+     * @param pageable    pagination information, including page number, size, and sorting options
+     * @return a {@link ResponseEntity} containing a list of {@link ContractDTO} representing the active contracts
      *         of the specified company, with HTTP status 200 (OK)
      * @throws IllegalArgumentException if {@code companyId} is {@code null}
      */
     @GetMapping("/company/{companyId}/active")
     public ResponseEntity<List<ContractDTO>> getActiveContractsByCompanyId(
         @PathVariable UUID companyId,
+        @RequestParam(required = false) Instant updatedFrom,
+        @RequestParam(required = false) Instant updatedTo,
         @ParameterObject Pageable pageable
     ) {
-        Page<ContractDTO> page = contractService.findActiveByCompanyId(companyId, pageable);
+        Page<ContractDTO> page = contractService.findActiveByCompanyId(companyId, updatedFrom, updatedTo, pageable);
         return ResponseEntity.ok().body(page.getContent());
     }
 

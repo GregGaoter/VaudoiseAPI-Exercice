@@ -4,6 +4,7 @@ import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
 import ch.vaudoise.vaudoiseapi.exercice.repository.ContractRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.ContractDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.ContractMapper;
+import ch.vaudoise.vaudoiseapi.exercice.service.specification.ContractSpecificationsBuilder;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -13,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,23 +116,39 @@ public class ContractService {
     }
 
     /**
-     * Retrieves a paginated list of active contracts (current date < end date) associated with the given company id.
+     * Retrieves a paginated list of active contracts for the specified company,
+     * optionally filtered by the last update date range.
      * <p>
-     * This method queries the underlying repository for contracts that are currently active
-     * and belong to the specified company. The results are mapped to {@link ContractDTO}
-     * objects before being returned. The query is executed in read-only transactional mode
-     * to ensure performance and prevent unintended modifications.
+     * A {@link Specification} is built to include the following criteria:
+     * <ul>
+     *   <li>Contracts belonging to the given company</li>
+     *   <li>Contracts that are currently active</li>
+     *   <li>Contracts last updated between {@code updatedFrom} and {@code updatedTo},
+     *       if these parameters are provided</li>
+     * </ul>
+     * The resulting entities are mapped to {@link ContractDTO} objects before being returned.
+     * The query is executed in read-only transactional mode to ensure performance
+     * and prevent unintended modifications.
      * </p>
      *
-     * @param companyId the unique identifier of the company whose active contracts should be retrieved
-     * @param pageable  pagination information, including page number, size, and sorting options
-     * @return a {@link Page} of {@link ContractDTO} representing the active contracts of the company
+     * @param companyId   the unique identifier of the company whose active contracts should be retrieved
+     * @param updatedFrom the lower bound of the update date filter (inclusive), or {@code null} for no lower bound
+     * @param updatedTo   the upper bound of the update date filter (inclusive), or {@code null} for no upper bound
+     * @param pageable    pagination information, including page number, size, and sorting options
+     * @return a {@link Page} of {@link ContractDTO} representing the active contracts that match the criteria
      * @throws IllegalArgumentException if {@code companyId} is {@code null}
      */
     @Transactional(readOnly = true)
-    public Page<ContractDTO> findActiveByCompanyId(UUID companyId, Pageable pageable) {
+    public Page<ContractDTO> findActiveByCompanyId(UUID companyId, Instant updatedFrom, Instant updatedTo, Pageable pageable) {
         LOG.debug("Request to get all active Contracts");
-        return contractRepository.findActiveByCompanyId(companyId, pageable).map(contractMapper::toDto);
+
+        Specification<Contract> spec = new ContractSpecificationsBuilder()
+            .withCompany(companyId)
+            .active()
+            .updatedBetween(updatedFrom, updatedTo)
+            .build();
+
+        return contractRepository.findAll(spec, pageable).map(contractMapper::toDto);
     }
 
     /**

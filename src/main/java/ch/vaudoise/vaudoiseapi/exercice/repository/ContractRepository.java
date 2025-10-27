@@ -14,13 +14,10 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ContractRepository extends JpaRepository<Contract, UUID> {
+public interface ContractRepository extends JpaRepository<Contract, UUID>, JpaSpecificationExecutor<Contract> {
     List<Contract> findByCompanyId(UUID companyId);
 
     List<Contract> findByPersonId(UUID personId);
-
-    @Query("SELECT c FROM Contract c WHERE c.company.id = :companyId AND c.endDate > CURRENT_TIMESTAMP")
-    Page<Contract> findActiveByCompanyId(@Param("companyId") UUID companyId, Pageable pageable);
 
     @Query("SELECT c FROM Contract c WHERE c.person.id = :personId AND c.endDate > CURRENT_TIMESTAMP")
     Page<Contract> findActiveByPersonId(@Param("personId") UUID personId, Pageable pageable);
