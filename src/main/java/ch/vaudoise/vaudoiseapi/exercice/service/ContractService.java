@@ -92,7 +92,9 @@ public class ContractService {
             .findById(contractDTO.getId())
             .map(existingContract -> {
                 contractMapper.partialUpdate(existingContract, contractDTO);
-
+                if (contractDTO.getCostAmount() != null) {
+                    existingContract.setUpdateDate(Instant.now());
+                }
                 return existingContract;
             })
             .map(contractRepository::save)
