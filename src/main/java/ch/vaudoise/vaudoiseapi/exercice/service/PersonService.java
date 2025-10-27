@@ -3,7 +3,10 @@ package ch.vaudoise.vaudoiseapi.exercice.service;
 import ch.vaudoise.vaudoiseapi.exercice.domain.Person;
 import ch.vaudoise.vaudoiseapi.exercice.repository.PersonRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.PersonDTO;
+import ch.vaudoise.vaudoiseapi.exercice.service.dto.PersonUpdateDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.PersonMapper;
+import ch.vaudoise.vaudoiseapi.exercice.service.mapper.PersonUpdateMapper;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -26,9 +29,12 @@ public class PersonService {
 
     private final PersonMapper personMapper;
 
-    public PersonService(PersonRepository personRepository, PersonMapper personMapper) {
+    private final PersonUpdateMapper personUpdateMapper;
+
+    public PersonService(PersonRepository personRepository, PersonMapper personMapper, PersonUpdateMapper personUpdateMapper) {
         this.personRepository = personRepository;
         this.personMapper = personMapper;
+        this.personUpdateMapper = personUpdateMapper;
     }
 
     /**
@@ -47,29 +53,35 @@ public class PersonService {
     /**
      * Update a person.
      *
-     * @param personDTO the entity to save.
+     * @param personUpdateDTO the entity to save.
      * @return the persisted entity.
      */
-    public PersonDTO update(PersonDTO personDTO) {
-        LOG.debug("Request to update Person : {}", personDTO);
-        Person person = personMapper.toEntity(personDTO);
-        person = personRepository.save(person);
-        return personMapper.toDto(person);
+    public PersonDTO update(PersonUpdateDTO personUpdateDTO) {
+        LOG.debug("Request to update Person : {}", personUpdateDTO);
+
+        UUID id = personUpdateDTO.getId();
+        Person databasePerson = personRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(String.format("Person with id %s not found", String.valueOf(id))));
+        Person updatedPerson = personUpdateMapper.updatePersonFromDto(personUpdateDTO, databasePerson);
+        Person persistedPerson = personRepository.save(updatedPerson);
+
+        return personMapper.toDto(persistedPerson);
     }
 
     /**
      * Partially update a person.
      *
-     * @param personDTO the entity to update partially.
+     * @param personUpdateDTO the entity to update partially.
      * @return the persisted entity.
      */
-    public Optional<PersonDTO> partialUpdate(PersonDTO personDTO) {
-        LOG.debug("Request to partially update Person : {}", personDTO);
+    public Optional<PersonDTO> partialUpdate(PersonUpdateDTO personUpdateDTO) {
+        LOG.debug("Request to partially update Person : {}", personUpdateDTO);
 
         return personRepository
-            .findById(personDTO.getId())
+            .findById(personUpdateDTO.getId())
             .map(existingPerson -> {
-                personMapper.partialUpdate(existingPerson, personDTO);
+                personUpdateMapper.partialUpdate(existingPerson, personUpdateDTO);
 
                 return existingPerson;
             })

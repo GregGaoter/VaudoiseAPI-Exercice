@@ -3,6 +3,7 @@ package ch.vaudoise.vaudoiseapi.exercice.web.rest;
 import ch.vaudoise.vaudoiseapi.exercice.repository.PersonRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.PersonService;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.PersonDTO;
+import ch.vaudoise.vaudoiseapi.exercice.service.dto.PersonUpdateDTO;
 import ch.vaudoise.vaudoiseapi.exercice.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -75,24 +76,25 @@ public class PersonResource {
     /**
      * {@code PUT  /people} : Updates an existing person.
      *
-     * @param personDTO the personDTO to update.
+     * @param personUpdateDTO the personDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated personDTO,
-     * or with status {@code 400 (Bad Request)} if the personDTO is not valid,
+     * or with status {@code 400 (Bad Request)} if the personUpdateDTO is not valid,
      * or with status {@code 500 (Internal Server Error)} if the personDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping
-    public ResponseEntity<PersonDTO> updatePerson(@Valid @RequestBody PersonDTO personDTO) throws URISyntaxException {
-        LOG.debug("REST request to update Person : {}", personDTO);
+    public ResponseEntity<PersonDTO> updatePerson(@Valid @RequestBody PersonUpdateDTO personUpdateDTO) throws URISyntaxException {
+        LOG.debug("REST request to update Person : {}", personUpdateDTO);
 
-        if (personDTO.getId() == null) {
+        if (personUpdateDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
-        if (!personRepository.existsById(personDTO.getId())) {
+        if (!personRepository.existsById(personUpdateDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        personDTO = personService.update(personDTO);
+        PersonDTO personDTO = personService.update(personUpdateDTO);
+
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, personDTO.getId().toString()))
             .body(personDTO);
@@ -101,30 +103,30 @@ public class PersonResource {
     /**
      * {@code PATCH  /people} : Partial updates given fields of an existing person, field will ignore if it is null
      *
-     * @param personDTO the personDTO to update.
+     * @param personUpdateDTO the personDTO to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated personDTO,
-     * or with status {@code 400 (Bad Request)} if the personDTO is not valid,
+     * or with status {@code 400 (Bad Request)} if the personUpdateDTO is not valid,
      * or with status {@code 404 (Not Found)} if the personDTO is not found,
      * or with status {@code 500 (Internal Server Error)} if the personDTO couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(consumes = { "application/json", "application/merge-patch+json" })
-    public ResponseEntity<PersonDTO> partialUpdatePerson(@NotNull @RequestBody PersonDTO personDTO) throws URISyntaxException {
-        LOG.debug("REST request to partial update Person partially : {}", personDTO);
+    public ResponseEntity<PersonDTO> partialUpdatePerson(@NotNull @RequestBody PersonUpdateDTO personUpdateDTO) throws URISyntaxException {
+        LOG.debug("REST request to partial update Person partially : {}", personUpdateDTO);
 
-        if (personDTO.getId() == null) {
+        if (personUpdateDTO.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
 
-        if (!personRepository.existsById(personDTO.getId())) {
+        if (!personRepository.existsById(personUpdateDTO.getId())) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<PersonDTO> result = personService.partialUpdate(personDTO);
+        Optional<PersonDTO> result = personService.partialUpdate(personUpdateDTO);
 
         return ResponseUtil.wrapOrNotFound(
             result,
-            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, personDTO.getId().toString())
+            HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, personUpdateDTO.getId().toString())
         );
     }
 
