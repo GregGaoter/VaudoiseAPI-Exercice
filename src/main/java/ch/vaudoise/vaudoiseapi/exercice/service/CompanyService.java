@@ -1,12 +1,16 @@
 package ch.vaudoise.vaudoiseapi.exercice.service;
 
 import ch.vaudoise.vaudoiseapi.exercice.domain.Company;
+import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
 import ch.vaudoise.vaudoiseapi.exercice.repository.CompanyRepository;
+import ch.vaudoise.vaudoiseapi.exercice.repository.ContractRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.CompanyDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.CompanyUpdateDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.CompanyMapper;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.CompanyUpdateMapper;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -31,10 +35,18 @@ public class CompanyService {
 
     private final CompanyUpdateMapper companyUpdateMapper;
 
-    public CompanyService(CompanyRepository companyRepository, CompanyMapper companyMapper, CompanyUpdateMapper companyUpdateMapper) {
+    private final ContractRepository contractRepository;
+
+    public CompanyService(
+        CompanyRepository companyRepository,
+        CompanyMapper companyMapper,
+        CompanyUpdateMapper companyUpdateMapper,
+        ContractRepository contractRepository
+    ) {
         this.companyRepository = companyRepository;
         this.companyMapper = companyMapper;
         this.companyUpdateMapper = companyUpdateMapper;
+        this.contractRepository = contractRepository;
     }
 
     /**
@@ -120,6 +132,12 @@ public class CompanyService {
      */
     public void delete(UUID id) {
         LOG.debug("Request to delete Company : {}", id);
+
+        List<Contract> contracts = contractRepository.findByCompanyId(id);
+        Instant now = Instant.now();
+        contracts.forEach(contract -> contract.setEndDate(now));
+        contractRepository.saveAll(contracts);
+
         companyRepository.deleteById(id);
     }
 }

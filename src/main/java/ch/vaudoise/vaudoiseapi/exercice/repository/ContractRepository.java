@@ -1,6 +1,7 @@
 package ch.vaudoise.vaudoiseapi.exercice.repository;
 
 import ch.vaudoise.vaudoiseapi.exercice.domain.Contract;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
@@ -10,4 +11,6 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ContractRepository extends JpaRepository<Contract, UUID> {}
+public interface ContractRepository extends JpaRepository<Contract, UUID> {
+    List<Contract> findByCompanyId(UUID companyId);
+}
