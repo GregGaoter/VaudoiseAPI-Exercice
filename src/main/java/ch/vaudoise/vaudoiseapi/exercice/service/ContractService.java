@@ -114,6 +114,46 @@ public class ContractService {
     }
 
     /**
+     * Retrieves a paginated list of active contracts (current date < end date) associated with the given company id.
+     * <p>
+     * This method queries the underlying repository for contracts that are currently active
+     * and belong to the specified company. The results are mapped to {@link ContractDTO}
+     * objects before being returned. The query is executed in read-only transactional mode
+     * to ensure performance and prevent unintended modifications.
+     * </p>
+     *
+     * @param companyId the unique identifier of the company whose active contracts should be retrieved
+     * @param pageable  pagination information, including page number, size, and sorting options
+     * @return a {@link Page} of {@link ContractDTO} representing the active contracts of the company
+     * @throws IllegalArgumentException if {@code companyId} is {@code null}
+     */
+    @Transactional(readOnly = true)
+    public Page<ContractDTO> findActiveByCompanyId(UUID companyId, Pageable pageable) {
+        LOG.debug("Request to get all active Contracts");
+        return contractRepository.findActiveByCompanyId(companyId, pageable).map(contractMapper::toDto);
+    }
+
+    /**
+     * Retrieves a paginated list of active contracts (current date < end date) associated with the given person id.
+     * <p>
+     * This method queries the underlying repository for contracts that are currently active
+     * and belong to the specified person. The results are mapped to {@link ContractDTO}
+     * objects before being returned. The query is executed in read-only transactional mode
+     * to ensure performance and prevent unintended modifications.
+     * </p>
+     *
+     * @param companyId the unique identifier of the person whose active contracts should be retrieved
+     * @param pageable  pagination information, including page number, size, and sorting options
+     * @return a {@link Page} of {@link ContractDTO} representing the active contracts of the person
+     * @throws IllegalArgumentException if {@code personId} is {@code null}
+     */
+    @Transactional(readOnly = true)
+    public Page<ContractDTO> findActiveByPersonId(UUID personId, Pageable pageable) {
+        LOG.debug("Request to get all active Contracts");
+        return contractRepository.findActiveByPersonId(personId, pageable).map(contractMapper::toDto);
+    }
+
+    /**
      * Get one contract by id.
      *
      * @param id the id of the entity.

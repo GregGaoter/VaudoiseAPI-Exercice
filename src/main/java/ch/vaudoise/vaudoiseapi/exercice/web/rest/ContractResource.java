@@ -139,6 +139,54 @@ public class ContractResource {
     }
 
     /**
+     * Handles HTTP GET requests to retrieve all active contracts for a given company.
+     * <p>
+     * This endpoint returns a list of {@link ContractDTO} objects representing the active
+     * contracts associated with the specified company. The results are paginated internally
+     * using the provided {@link Pageable} parameter, but only the content of the current page
+     * is returned in the response body.
+     * </p>
+     *
+     * @param companyId the unique identifier of the company whose active contracts should be retrieved
+     * @param pageable  pagination information (page number, size, and sorting options) used to query the contracts
+     * @return a {@link ResponseEntity} containing a list of {@link ContractDTO} for the active contracts
+     *         of the specified company, with HTTP status 200 (OK)
+     * @throws IllegalArgumentException if {@code companyId} is {@code null}
+     */
+    @GetMapping("/company/{companyId}/active")
+    public ResponseEntity<List<ContractDTO>> getActiveContractsByCompanyId(
+        @PathVariable UUID companyId,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<ContractDTO> page = contractService.findActiveByCompanyId(companyId, pageable);
+        return ResponseEntity.ok().body(page.getContent());
+    }
+
+    /**
+     * Handles HTTP GET requests to retrieve all active contracts for a given person.
+     * <p>
+     * This endpoint returns a list of {@link ContractDTO} objects representing the active
+     * contracts associated with the specified person. The results are paginated internally
+     * using the provided {@link Pageable} parameter, but only the content of the current page
+     * is returned in the response body.
+     * </p>
+     *
+     * @param personId the unique identifier of the company whose active contracts should be retrieved
+     * @param pageable  pagination information (page number, size, and sorting options) used to query the contracts
+     * @return a {@link ResponseEntity} containing a list of {@link ContractDTO} for the active contracts
+     *         of the specified person, with HTTP status 200 (OK)
+     * @throws IllegalArgumentException if {@code companyId} is {@code null}
+     */
+    @GetMapping("/company/{companyId}/active")
+    public ResponseEntity<List<ContractDTO>> getActiveContractsByPersonId(
+        @PathVariable UUID personId,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        Page<ContractDTO> page = contractService.findActiveByCompanyId(personId, pageable);
+        return ResponseEntity.ok().body(page.getContent());
+    }
+
+    /**
      * {@code GET  /contracts/:id} : get the "id" contract.
      *
      * @param id the id of the contractDTO to retrieve.
