@@ -171,18 +171,18 @@ public class ContractResource {
      * is returned in the response body.
      * </p>
      *
-     * @param personId the unique identifier of the company whose active contracts should be retrieved
+     * @param personId the unique identifier of the person whose active contracts should be retrieved
      * @param pageable  pagination information (page number, size, and sorting options) used to query the contracts
      * @return a {@link ResponseEntity} containing a list of {@link ContractDTO} for the active contracts
      *         of the specified person, with HTTP status 200 (OK)
-     * @throws IllegalArgumentException if {@code companyId} is {@code null}
+     * @throws IllegalArgumentException if {@code personId} is {@code null}
      */
-    @GetMapping("/company/{companyId}/active")
+    @GetMapping("/person/{personId}/active")
     public ResponseEntity<List<ContractDTO>> getActiveContractsByPersonId(
         @PathVariable UUID personId,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        Page<ContractDTO> page = contractService.findActiveByCompanyId(personId, pageable);
+        Page<ContractDTO> page = contractService.findActiveByPersonId(personId, pageable);
         return ResponseEntity.ok().body(page.getContent());
     }
 
