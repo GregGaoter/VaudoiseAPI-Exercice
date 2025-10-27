@@ -20,4 +20,5 @@
     <include file="config/liquibase/changelog/20251023132734_added_entity_constraints_Company.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251023132735_added_entity_constraints_Contract.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20251027154000_added_contract_person_or_company_check.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20251027182500_added_column_active_to_client_info.xml" relativeToChangelogFile="false"/>
 </databaseChangeLog>

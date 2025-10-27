@@ -5,6 +5,7 @@ entity ClientInfo {
   name String required
   email String
   phone String pattern(/^(?:\+41|0041|0)(?:\s?\(0\))?\s?[1-9]{2}\s?[0-9]{3}\s?[0-9]{2}\s?[0-9]{2}$/)
+  active Boolean required
 }
 
 entity Person {

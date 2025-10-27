@@ -51,6 +51,9 @@ class ClientInfoResourceIT {
     private static final String DEFAULT_PHONE = "0 53 335 4694";
     private static final String UPDATED_PHONE = "0041 910310650";
 
+    private static final Boolean DEFAULT_ACTIVE = false;
+    private static final Boolean UPDATED_ACTIVE = true;
+
     private static final String ENTITY_API_URL = "/api/client-infos";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -85,7 +88,8 @@ class ClientInfoResourceIT {
             .updateDate(DEFAULT_UPDATE_DATE)
             .name(DEFAULT_NAME)
             .email(DEFAULT_EMAIL)
-            .phone(DEFAULT_PHONE);
+            .phone(DEFAULT_PHONE)
+            .active(DEFAULT_ACTIVE);
     }
 
     /**
@@ -100,7 +104,8 @@ class ClientInfoResourceIT {
             .updateDate(UPDATED_UPDATE_DATE)
             .name(UPDATED_NAME)
             .email(UPDATED_EMAIL)
-            .phone(UPDATED_PHONE);
+            .phone(UPDATED_PHONE)
+            .active(UPDATED_ACTIVE);
     }
 
     @BeforeEach
@@ -213,6 +218,23 @@ class ClientInfoResourceIT {
 
     @Test
     @Transactional
+    void checkActiveIsRequired() throws Exception {
+        long databaseSizeBeforeTest = getRepositoryCount();
+        // set the field null
+        clientInfo.setActive(null);
+
+        // Create the ClientInfo, which fails.
+        ClientInfoDTO clientInfoDTO = clientInfoMapper.toDto(clientInfo);
+
+        restClientInfoMockMvc
+            .perform(post(ENTITY_API_URL).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(om.writeValueAsBytes(clientInfoDTO)))
+            .andExpect(status().isBadRequest());
+
+        assertSameRepositoryCount(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     void getAllClientInfos() throws Exception {
         // Initialize the database
         insertedClientInfo = clientInfoRepository.saveAndFlush(clientInfo);
@@ -227,7 +249,8 @@ class ClientInfoResourceIT {
             .andExpect(jsonPath("$.[*].updateDate").value(hasItem(DEFAULT_UPDATE_DATE.toString())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].email").value(hasItem(DEFAULT_EMAIL)))
-            .andExpect(jsonPath("$.[*].phone").value(hasItem(DEFAULT_PHONE)));
+            .andExpect(jsonPath("$.[*].phone").value(hasItem(DEFAULT_PHONE)))
+            .andExpect(jsonPath("$.[*].active").value(hasItem(DEFAULT_ACTIVE)));
     }
 
     @Test
@@ -246,7 +269,8 @@ class ClientInfoResourceIT {
             .andExpect(jsonPath("$.updateDate").value(DEFAULT_UPDATE_DATE.toString()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME))
             .andExpect(jsonPath("$.email").value(DEFAULT_EMAIL))
-            .andExpect(jsonPath("$.phone").value(DEFAULT_PHONE));
+            .andExpect(jsonPath("$.phone").value(DEFAULT_PHONE))
+            .andExpect(jsonPath("$.active").value(DEFAULT_ACTIVE));
     }
 
     @Test
@@ -273,7 +297,8 @@ class ClientInfoResourceIT {
             .updateDate(UPDATED_UPDATE_DATE)
             .name(UPDATED_NAME)
             .email(UPDATED_EMAIL)
-            .phone(UPDATED_PHONE);
+            .phone(UPDATED_PHONE)
+            .active(UPDATED_ACTIVE);
         ClientInfoDTO clientInfoDTO = clientInfoMapper.toDto(updatedClientInfo);
 
         restClientInfoMockMvc
@@ -366,7 +391,7 @@ class ClientInfoResourceIT {
         ClientInfo partialUpdatedClientInfo = new ClientInfo();
         partialUpdatedClientInfo.setId(clientInfo.getId());
 
-        partialUpdatedClientInfo.creationDate(UPDATED_CREATION_DATE);
+        partialUpdatedClientInfo.creationDate(UPDATED_CREATION_DATE).active(UPDATED_ACTIVE);
 
         restClientInfoMockMvc
             .perform(
@@ -403,7 +428,8 @@ class ClientInfoResourceIT {
             .updateDate(UPDATED_UPDATE_DATE)
             .name(UPDATED_NAME)
             .email(UPDATED_EMAIL)
-            .phone(UPDATED_PHONE);
+            .phone(UPDATED_PHONE)
+            .active(UPDATED_ACTIVE);
 
         restClientInfoMockMvc
             .perform(

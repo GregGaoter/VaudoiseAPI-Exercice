@@ -28,6 +28,9 @@ public class ClientInfoDTO implements Serializable {
     @Pattern(regexp = "^(?:\\+41|0041|0)(?:\\s?\\(0\\))?\\s?[1-9]{2}\\s?[0-9]{3}\\s?[0-9]{2}\\s?[0-9]{2}$")
     private String phone;
 
+    @NotNull
+    private Boolean active;
+
     public UUID getId() {
         return id;
     }
@@ -76,6 +79,14 @@ public class ClientInfoDTO implements Serializable {
         this.phone = phone;
     }
 
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -107,6 +118,7 @@ public class ClientInfoDTO implements Serializable {
             ", name='" + getName() + "'" +
             ", email='" + getEmail() + "'" +
             ", phone='" + getPhone() + "'" +
+            ", active='" + getActive() + "'" +
             "}";
     }
 }

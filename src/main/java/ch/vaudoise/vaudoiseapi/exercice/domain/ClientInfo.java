@@ -41,6 +41,10 @@ public class ClientInfo implements Serializable {
     @Column(name = "phone")
     private String phone;
 
+    @NotNull
+    @Column(name = "active", nullable = false)
+    private Boolean active = true;
+
     @JsonIgnoreProperties(value = { "clientInfo" }, allowSetters = true)
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "clientInfo")
     private Person person;
@@ -141,6 +145,19 @@ public class ClientInfo implements Serializable {
         this.phone = phone;
     }
 
+    public Boolean getActive() {
+        return this.active;
+    }
+
+    public ClientInfo active(Boolean active) {
+        this.setActive(active);
+        return this;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
     public Person getPerson() {
         return this.person;
     }
@@ -208,6 +225,7 @@ public class ClientInfo implements Serializable {
             ", name='" + getName() + "'" +
             ", email='" + getEmail() + "'" +
             ", phone='" + getPhone() + "'" +
+            ", active='" + getActive() + "'" +
             "}";
     }
 }
