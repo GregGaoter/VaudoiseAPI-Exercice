@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <!--
+        Added check constraint Person or Company for entity Contract.
+    -->
+    <changeSet id="20251027154000-2" author="GregGaoter">
+        <sql>
+            ALTER TABLE contract
+            ADD CONSTRAINT chk_contract_person_or_company
+            CHECK (
+                (person_id IS NOT NULL AND company_id IS NULL)
+             OR (person_id IS NULL AND company_id IS NOT NULL)
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>
