@@ -216,6 +216,13 @@ public class ContractResource {
         return ResponseEntity.ok().body(costAmountTotal);
     }
 
+    @GetMapping("/person/{personId}/active/costAmountTotal")
+    public ResponseEntity<BigDecimal> getActiveCostAmountTotalByPersonId(@PathVariable UUID personId) {
+        BigDecimal costAmountTotal = contractService.getActiveCostAmountTotalByPersonId(personId);
+
+        return ResponseEntity.ok().body(costAmountTotal);
+    }
+
     /**
      * {@code GET  /contracts/:id} : get the "id" contract.
      *

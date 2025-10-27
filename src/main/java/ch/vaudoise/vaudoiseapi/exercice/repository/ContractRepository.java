@@ -22,4 +22,7 @@ public interface ContractRepository extends JpaRepository<Contract, UUID>, JpaSp
 
     @Query("SELECT SUM(c.costAmount) FROM Contract c WHERE c.company.id = :companyId AND c.endDate > CURRENT_TIMESTAMP")
     BigDecimal getActiveCostAmountTotalByCompanyId(@Param("companyId") UUID companyId);
+
+    @Query("SELECT SUM(c.costAmount) FROM Contract c WHERE c.person.id = :personId AND c.endDate > CURRENT_TIMESTAMP")
+    BigDecimal getActiveCostAmountTotalByPersonId(@Param("personId") UUID personId);
 }

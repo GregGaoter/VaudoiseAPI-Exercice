@@ -193,6 +193,12 @@ public class ContractService {
         return contractRepository.getActiveCostAmountTotalByCompanyId(companyId);
     }
 
+    public BigDecimal getActiveCostAmountTotalByPersonId(UUID personId) {
+        LOG.debug("Request to get the cost amount total of all active Contracts");
+
+        return contractRepository.getActiveCostAmountTotalByPersonId(personId);
+    }
+
     /**
      * Get one contract by id.
      *
