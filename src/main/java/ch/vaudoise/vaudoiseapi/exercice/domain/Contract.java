@@ -56,6 +56,7 @@ public class Contract implements Serializable {
         Instant now = Instant.now();
         this.creationDate = now;
         this.updateDate = now;
+        if (this.startDate == null) this.startDate = now;
     }
 
     @PreUpdate
