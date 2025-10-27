@@ -101,6 +101,7 @@ public class PersonResource {
             .body(personDTO);
     }
 
+    // TODO Fix me : null values of clientInfoDTO are not ignored
     /**
      * {@code PATCH  /people} : Partial updates given fields of an existing person, field will ignore if it is null
      *

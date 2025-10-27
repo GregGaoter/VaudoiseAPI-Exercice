@@ -101,6 +101,7 @@ public class CompanyResource {
             .body(companyDTO);
     }
 
+    // TODO Fix me : null values of clientInfoDTO are not ignored
     /**
      * {@code PATCH  /companies} : Partial updates given fields of an existing company, field will ignore if it is null
      *
