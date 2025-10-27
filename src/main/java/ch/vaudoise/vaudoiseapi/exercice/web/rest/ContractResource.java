@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -131,7 +132,7 @@ public class ContractResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of contracts in body.
      */
     @GetMapping
-    public ResponseEntity<List<ContractDTO>> getAllContracts(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<ContractDTO>> getAllContracts(@ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of Contracts");
         Page<ContractDTO> page = contractService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -156,7 +157,7 @@ public class ContractResource {
     @GetMapping("/company/{companyId}/active")
     public ResponseEntity<List<ContractDTO>> getActiveContractsByCompanyId(
         @PathVariable UUID companyId,
-        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+        @ParameterObject Pageable pageable
     ) {
         Page<ContractDTO> page = contractService.findActiveByCompanyId(companyId, pageable);
         return ResponseEntity.ok().body(page.getContent());
@@ -178,10 +179,7 @@ public class ContractResource {
      * @throws IllegalArgumentException if {@code personId} is {@code null}
      */
     @GetMapping("/person/{personId}/active")
-    public ResponseEntity<List<ContractDTO>> getActiveContractsByPersonId(
-        @PathVariable UUID personId,
-        @org.springdoc.core.annotations.ParameterObject Pageable pageable
-    ) {
+    public ResponseEntity<List<ContractDTO>> getActiveContractsByPersonId(@PathVariable UUID personId, @ParameterObject Pageable pageable) {
         Page<ContractDTO> page = contractService.findActiveByPersonId(personId, pageable);
         return ResponseEntity.ok().body(page.getContent());
     }
