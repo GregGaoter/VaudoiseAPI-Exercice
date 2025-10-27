@@ -1,10 +1,14 @@
 
-  ${AnsiColor.GREEN}      ██╗${AnsiColor.RED} ██╗   ██╗ ████████╗ ███████╗   ██████╗ ████████╗ ████████╗ ███████╗
-  ${AnsiColor.GREEN}      ██║${AnsiColor.RED} ██║   ██║ ╚══██╔══╝ ██╔═══██╗ ██╔════╝ ╚══██╔══╝ ██╔═════╝ ██╔═══██╗
-  ${AnsiColor.GREEN}      ██║${AnsiColor.RED} ████████║    ██║    ███████╔╝ ╚█████╗     ██║    ██████╗   ███████╔╝
-  ${AnsiColor.GREEN}██╗   ██║${AnsiColor.RED} ██╔═══██║    ██║    ██╔════╝   ╚═══██╗    ██║    ██╔═══╝   ██╔══██║
-  ${AnsiColor.GREEN}╚██████╔╝${AnsiColor.RED} ██║   ██║ ████████╗ ██║       ██████╔╝    ██║    ████████╗ ██║  ╚██╗
-  ${AnsiColor.GREEN} ╚═════╝ ${AnsiColor.RED} ╚═╝   ╚═╝ ╚═══════╝ ╚═╝       ╚═════╝     ╚═╝    ╚═══════╝ ╚═╝   ╚═╝
+  ${AnsiColor.GREEN} ,ggg,         ,gg                                                                        ${AnsiColor.CYAN}           ,ggg,  ,ggggggggggg,    ,a8a, 
+  ${AnsiColor.GREEN}dP""Y8a       ,8P                                8I                                       ${AnsiColor.CYAN}          dP""8I dP"""88""""""Y8, ,8" "8,
+  ${AnsiColor.GREEN}Yb, `88       d8'                                8I                                       ${AnsiColor.CYAN}         dP   88 Yb,  88      `8b d8   8b
+  ${AnsiColor.GREEN} `"  88       88                                 8I                gg                     ${AnsiColor.CYAN}        dP    88  `"  88      ,8P 88   88
+  ${AnsiColor.GREEN}     88       88                                 8I                ""                     ${AnsiColor.CYAN}       ,8'    88      88aaaad8P"  88   88
+  ${AnsiColor.GREEN}     I8       8I   ,gggg,gg  gg      gg    ,gggg,8I    ,ggggg,     gg     ,g,      ,ggg,  ${AnsiColor.CYAN}       d88888888      88"""""     Y8   8P
+  ${AnsiColor.GREEN}     `8,     ,8'  dP"  "Y8I  I8      8I   dP"  "Y8I   dP"  "Y8ggg  88    ,8'8,    i8" "8i ${AnsiColor.CYAN} __   ,8"     88      88          `8, ,8'
+  ${AnsiColor.GREEN}      Y8,   ,8P  i8'    ,8I  I8,    ,8I  i8'    ,8I  i8'    ,8I    88   ,8'  Yb   I8, ,8I ${AnsiColor.CYAN}dP"  ,8P      Y8      88     8888  "8,8" 
+  ${AnsiColor.GREEN}       Yb,_,dP  ,d8,   ,d8b,,d8b,  ,d8b,,d8,   ,d8b,,d8,   ,d8'  _,88,_,8'_   8)  `YbadP' ${AnsiColor.CYAN}Yb,_,dP       `8b,    88     `8b,  ,d8b, 
+  ${AnsiColor.GREEN}        "Y8P"   P"Y8888P"`Y88P'"Y88P"`Y8P"Y8888P"`Y8P"Y8888P"    8P""Y8P' "YY8P8P888P"Y888${AnsiColor.CYAN} "Y8P"         `Y8    88       "Y88P" "Y8
 
 ${AnsiColor.BRIGHT_BLUE}:: JHipster 🤓  :: Running Spring Boot ${spring-boot.version} :: Startup profile(s) ${spring.profiles.active} ::
 :: https://www.jhipster.tech ::${AnsiColor.DEFAULT}
