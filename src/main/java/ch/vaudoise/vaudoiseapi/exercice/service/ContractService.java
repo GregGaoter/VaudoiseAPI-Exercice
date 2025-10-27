@@ -5,6 +5,7 @@ import ch.vaudoise.vaudoiseapi.exercice.repository.ContractRepository;
 import ch.vaudoise.vaudoiseapi.exercice.service.dto.ContractDTO;
 import ch.vaudoise.vaudoiseapi.exercice.service.mapper.ContractMapper;
 import ch.vaudoise.vaudoiseapi.exercice.service.specification.ContractSpecificationsBuilder;
+import ch.vaudoise.vaudoiseapi.exercice.web.rest.errors.InvalidContractException;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -44,8 +45,12 @@ public class ContractService {
      */
     public ContractDTO save(ContractDTO contractDTO) {
         LOG.debug("Request to save Contract : {}", contractDTO);
+
+        validateContractDTO(contractDTO);
+
         Contract contract = contractMapper.toEntity(contractDTO);
         contract = contractRepository.save(contract);
+
         return contractMapper.toDto(contract);
     }
 
@@ -57,6 +62,8 @@ public class ContractService {
      */
     public ContractDTO update(ContractDTO contractDTO) {
         LOG.debug("Request to update Contract : {}", contractDTO);
+
+        validateContractDTO(contractDTO);
 
         UUID id = contractDTO.getId();
         Contract databaseContract = contractRepository
@@ -94,6 +101,11 @@ public class ContractService {
             .findById(contractDTO.getId())
             .map(existingContract -> {
                 contractMapper.partialUpdate(existingContract, contractDTO);
+
+                // Validate contract
+                ContractDTO existingContractDto = contractMapper.toDto(existingContract);
+                validateContractDTO(existingContractDto);
+
                 if (contractDTO.getCostAmount() != null) {
                     existingContract.setUpdateDate(Instant.now());
                 }
@@ -219,5 +231,14 @@ public class ContractService {
     public void delete(UUID id) {
         LOG.debug("Request to delete Contract : {}", id);
         contractRepository.deleteById(id);
+    }
+
+    private void validateContractDTO(ContractDTO dto) {
+        boolean hasPerson = dto.getPersonId() != null;
+        boolean hasCompany = dto.getCompanyId() != null;
+
+        if (hasPerson == hasCompany) {
+            throw new InvalidContractException(" A contract must be associated with either a person or a company, but not both.");
+        }
     }
 }
