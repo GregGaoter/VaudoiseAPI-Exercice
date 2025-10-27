@@ -11,7 +11,7 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link Person} and its DTO {@link PersonDTO}.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { ClientInfoMapper.class })
 public interface PersonMapper extends EntityMapper<PersonDTO, Person> {
     @Mapping(target = "clientInfo", source = "clientInfo", qualifiedByName = "clientInfoFull")
     PersonDTO toDto(Person s);

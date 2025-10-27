@@ -11,7 +11,7 @@ import org.mapstruct.*;
 /**
  * Mapper for the entity {@link Contract} and its DTO {@link ContractDTO}.
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { PersonMapper.class, CompanyMapper.class })
 public interface ContractMapper extends EntityMapper<ContractDTO, Contract> {
     @Mapping(target = "personId", source = "person.id")
     @Mapping(target = "companyId", source = "company.id")
