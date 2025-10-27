@@ -32,9 +32,9 @@ public class ContractDTO implements Serializable {
     @DecimalMin(value = "0")
     private BigDecimal costAmount;
 
-    private PersonDTO person;
+    private UUID personId;
 
-    private CompanyDTO company;
+    private UUID companyId;
 
     public UUID getId() {
         return id;
@@ -84,20 +84,20 @@ public class ContractDTO implements Serializable {
         this.costAmount = costAmount;
     }
 
-    public PersonDTO getPerson() {
-        return person;
+    public UUID getPersonId() {
+        return personId;
     }
 
-    public void setPerson(PersonDTO person) {
-        this.person = person;
+    public void setPersonId(UUID personId) {
+        this.personId = personId;
     }
 
-    public CompanyDTO getCompany() {
-        return company;
+    public UUID getCompanyId() {
+        return companyId;
     }
 
-    public void setCompany(CompanyDTO company) {
-        this.company = company;
+    public void setCompanyId(UUID companyId) {
+        this.companyId = companyId;
     }
 
     @Override
@@ -131,8 +131,8 @@ public class ContractDTO implements Serializable {
             ", startDate='" + getStartDate() + "'" +
             ", endDate='" + getEndDate() + "'" +
             ", costAmount=" + getCostAmount() +
-            ", person=" + getPerson() +
-            ", company=" + getCompany() +
+            ", personId=" + getPersonId() +
+            ", companyId=" + getCompanyId() +
             "}";
     }
 }
