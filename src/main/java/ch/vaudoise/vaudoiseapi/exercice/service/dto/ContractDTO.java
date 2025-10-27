@@ -1,5 +1,6 @@
 package ch.vaudoise.vaudoiseapi.exercice.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public class ContractDTO implements Serializable {
     private Instant creationDate;
 
     @NotNull
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Instant updateDate;
 
     @NotNull
