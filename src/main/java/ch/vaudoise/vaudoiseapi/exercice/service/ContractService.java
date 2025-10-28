@@ -83,8 +83,8 @@ public class ContractService {
             contractUpdated.setUpdateDate(Instant.now());
         }
 
-        Contract contract = contractMapper.toEntity(contractDTO);
-        contract = contractRepository.save(contract);
+        Contract contract = contractRepository.save(contractUpdated);
+
         return contractMapper.toDto(contract);
     }
 

@@ -59,11 +59,6 @@ public class Contract implements Serializable {
         if (this.startDate == null) this.startDate = now;
     }
 
-    @PreUpdate
-    public void preUpdate() {
-        this.updateDate = Instant.now();
-    }
-
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public UUID getId() {
