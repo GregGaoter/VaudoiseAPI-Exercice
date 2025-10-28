@@ -1,6 +1,8 @@
-# vaudoiseapi
+# Vaudoise API exercice
 
-This application was generated using JHipster 8.11.0, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.11.0](https://www.jhipster.tech/documentation-archive/v8.11.0).
+This project is a **JHipster-generated Spring Boot application**.
+
+It runs inside a Docker container and exposes REST API endpoints that can be tested using **Swagger-UI**.
 
 ## Project Structure
 
@@ -17,96 +19,51 @@ In the project root, JHipster generates configuration files for tools like git, 
 - `.jhipster/*.json` - JHipster entity configuration files
 - `/src/main/docker` - Docker configurations for the application and services that the application depends on
 
+## Requirements
+
+- Java 17+ (required by JHipster)
+- Docker (to run the containerized application)
+
 ## Development
 
-To start your application in the dev profile, run:
+### 1. Clone the Repository
+
+Clone the project from GitHub:
+
+```
+git clone https://github.com/GregGaoter/VaudoiseAPI-Exercice.git
+cd VaudoiseAPI-Exercice
+```
+
+### 2. Start the Application
+
+To start the application in the dev profile, run:
 
 ```
 ./mvnw
 ```
 
-For further instructions on how to develop with JHipster, have a look at [Using JHipster in development][].
+This command will:
 
-## Building for production
+- Build the application
+- Create and start a Docker container for the service
+- Expose the API on **http://localhost:8080**
 
-### Packaging as jar
+### 3. Access the API Documentation
 
-To build the final jar and optimize the vaudoiseapi application for production, run:
+Once the application is running, you can explore and test the endpoints using **Swagger-UI**:
 
-```
-./mvnw -Pprod clean verify
-```
+👉 http://localhost:8080/swagger-ui/index.html?urls.primaryName=springdocDefault
 
-To ensure everything worked, run:
+## Design Choice: Composition over Inheritance
 
-```
-java -jar target/*.jar
-```
+This project uses **composition** to model client types (`Person` and `Company`) instead of relying on JPA inheritance. While inheritance (`@Inheritance(strategy = SINGLE_TABLE)`) is supported in JPA, it can lead to complex schemas with many nullable fields and discriminator logic. To keep the domain model clean and maintainable, I chose to extract shared fields (name, email, phone) into a separate `ClientInfo` entity.
 
-Refer to [Using JHipster in production][] for more details.
+Each client type (`Person`, `Company`) holds a reference to its own `ClientInfo`, allowing reuse of common attributes without enforcing a rigid class hierarchy.
 
-### Packaging as war
+Contracts are linked directly to either `Person` or `Company`, and service-layer logic ensures that only one client type is associated per contract.
 
-To package your application as a war in order to deploy it to an application server, run:
-
-```
-./mvnw -Pprod,war clean verify
-```
-
-### JHipster Control Center
-
-JHipster Control Center can help you manage and control your application(s). You can start a local control center server (accessible on http://localhost:7419) with:
-
-```
-docker compose -f src/main/docker/jhipster-control-center.yml up
-```
-
-## Testing
-
-### Spring Boot tests
-
-To launch your application's tests, run:
-
-```
-./mvnw verify
-```
-
-## Others
-
-### Code quality using Sonar
-
-Sonar is used to analyse code quality. You can start a local Sonar server (accessible on http://localhost:9001) with:
-
-```
-docker compose -f src/main/docker/sonar.yml up -d
-```
-
-Note: we have turned off forced authentication redirect for UI in [src/main/docker/sonar.yml](src/main/docker/sonar.yml) for out of the box experience while trying out SonarQube, for real use cases turn it back on.
-
-You can run a Sonar analysis with using the [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner) or by using the maven plugin.
-
-Then, run a Sonar analysis:
-
-```
-./mvnw -Pprod clean verify sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
-```
-
-If you need to re-run the Sonar phase, please be sure to specify at least the `initialize` phase since Sonar properties are loaded from the sonar-project.properties file.
-
-```
-./mvnw initialize sonar:sonar -Dsonar.login=admin -Dsonar.password=admin
-```
-
-Additionally, Instead of passing `sonar.password` and `sonar.login` as CLI arguments, these parameters can be configured from [sonar-project.properties](sonar-project.properties) as shown below:
-
-```
-sonar.login=admin
-sonar.password=admin
-```
-
-For more information, refer to the [Code quality page][].
-
-### Docker Compose support
+## Docker Compose support
 
 JHipster generates a number of Docker Compose configuration files in the [src/main/docker/](src/main/docker/) folder to launch required third party services.
 
@@ -152,18 +109,3 @@ docker compose -f src/main/docker/app.yml up -d
 ```
 
 For more information refer to [Using Docker and Docker-Compose][], this page also contains information on the Docker Compose sub-generator (`jhipster docker-compose`), which is able to generate Docker configurations for one or several JHipster applications.
-
-## Continuous Integration (optional)
-
-To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`), this will let you generate configuration files for a number of Continuous Integration systems. Consult the [Setting up Continuous Integration][] page for more information.
-
-[JHipster Homepage and latest documentation]: https://www.jhipster.tech
-[JHipster 8.11.0 archive]: https://www.jhipster.tech/documentation-archive/v8.11.0
-[Using JHipster in development]: https://www.jhipster.tech/documentation-archive/v8.11.0/development/
-[Using Docker and Docker-Compose]: https://www.jhipster.tech/documentation-archive/v8.11.0/docker-compose
-[Using JHipster in production]: https://www.jhipster.tech/documentation-archive/v8.11.0/production/
-[Running tests page]: https://www.jhipster.tech/documentation-archive/v8.11.0/running-tests/
-[Code quality page]: https://www.jhipster.tech/documentation-archive/v8.11.0/code-quality/
-[Setting up Continuous Integration]: https://www.jhipster.tech/documentation-archive/v8.11.0/setting-up-ci/
-[Node.js]: https://nodejs.org/
-[NPM]: https://www.npmjs.com/
